@@ -1,12 +1,24 @@
 const express = require("express");
+//const app = express();
+
+const cors = require("cors");
+
 const Item = require("./models/Item");
 const User = require("./models/User");
+
 const router = express.Router();
+
+router.use(
+  cors({
+    origin: "http://127.0.0.1:5500",
+  })
+);
 
 //user routes
 //get all users
 router.get("/user", async (req, res) => {
   const users = await User.find();
+  res.status(200);
   res.send(users);
 });
 
@@ -27,6 +39,7 @@ router.post("/user", async (req, res) => {
     name: req.body.name,
   });
   await User.create(req.body);
+  res.status(200);
   res.send(user);
 });
 
@@ -41,6 +54,7 @@ router.patch("/user/:id", async (req, res) => {
 
     await user.save();
     console.log("saved user: ", user);
+    res.status(200);
     res.send(user);
   } catch {
     res.status(404);
