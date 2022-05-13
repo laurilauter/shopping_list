@@ -1,37 +1,39 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 document.addEventListener("DOMContentLoaded", () => {
-  (async () => {
-    try {
-      let res = await fetch("http://localhost:5000/api/item", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-      });
-      let data = await res.json();
-      console.log("data: ", data);
-
-      //THE OTHER WAY
-      // data.forEach((element) => {
-      //   const container = document.getElementById("container");
-      //   const listDiv = document.createElement("div");
-      //   const p_id = document.createElement("p");
-      //   p_id.innerHTML = element._id;
-      //   listDiv.appendChild(p_id);
-      //   container.appendChild(listDiv);
-      // });
-
-      data.forEach((element) => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-          <p>id: ${element._id}</p>
-          <p>name: ${element.name}</p>
-          <p>amount: ${element.amount}</p>
-          <p>author: ${element.author}</p>
-          <p>active: ${element.active}</p>
+    //load inital items list
+    (() => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            let res = yield fetch("http://localhost:5000/api/item", {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            });
+            let data = yield res.json();
+            console.log("data: ", data);
+            data.forEach((element) => {
+                const div = document.createElement("div");
+                div.innerHTML = `
+          <div class="item-container">
+          <span class="author-span">${element.author}</span>
+          <span class="${element.active}" id="${element._id}">${element.name}</span>
+          <span class="amount-span">${element.amount}</span>
+          <button>X</button>
+          </div>
           <br>
           `;
-        container.appendChild(div);
-      });
-    } catch (error) {
-      console.log("Error", error);
-    }
-  })();
+                document.getElementById("middle").appendChild(div);
+            });
+        }
+        catch (error) {
+            console.log("Error", error);
+        }
+    }))();
 });
