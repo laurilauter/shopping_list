@@ -1,0 +1,1 @@
+This is a simple shopping list app with Node express backend and MongoDB.
