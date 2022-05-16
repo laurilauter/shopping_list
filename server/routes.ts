@@ -1,73 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const Item = require("./models/Item");
-const User = require("./models/User");
 const router = express.Router();
 
-router.use(
-  cors({
-    origin: "http://127.0.0.1:5500",
-  })
-);
-
-//user routes
-//get all users
-router.get("/user", async (req: any, res: any) => {
-  const users = await User.find();
-  res.status(200);
-  res.send(users);
-});
-
-//get user by id
-router.get("/user/:id", async (req: any, res: any) => {
-  try {
-    const user = await User.findOne({ _id: req.params.id });
-    res.send(user);
-  } catch {
-    res.status(404);
-    res.send({ error: "User doesn't exist!" });
-  }
-});
-
-//create new user
-router.post("/user", async (req: any, res: any) => {
-  const user = new User({
-    name: req.body.name,
-  });
-  await User.create(req.body);
-  res.status(200);
-  res.send(user);
-});
-
-//edit user
-router.patch("/user/:id", async (req: any, res: any) => {
-  try {
-    const user = await User.findOne({ _id: req.params.id });
-
-    if (req.body.name) {
-      user.name = req.body.name;
-    }
-
-    await user.save();
-    console.log("saved user: ", user);
-    res.status(200);
-    res.send(user);
-  } catch {
-    res.status(404);
-    res.send({ error: "User doesn't exist!" });
-  }
-});
-
-//delete user
-router.delete("/user/:id", async (req: any, res: any) => {
-  try {
-    await User.deleteOne({ _id: req.params.id });
-    res.status(204).send("User deleted");
-  } catch {
-    res.status(404);
-    res.send({ error: "User doesn't exist!" });
-  }
-});
+//use cors
+router.use(cors());
 
 //item routes
 //get all items
@@ -81,7 +18,6 @@ router.post("/item", async (req: any, res: any) => {
   const item = new Item({
     name: req.body.name,
     amount: req.body.amount,
-    author: req.body.author,
     active: req.body.active,
   });
   await Item.create(req.body);
@@ -100,7 +36,9 @@ router.get("/item/:id", async (req: any, res: any) => {
 });
 
 //edit item
-router.patch("/item/:id", async (req: any, res: any) => {
+router.put("/item/:id", async (req: any, res: any) => {
+  console.log("req.body.active: ", req.body.active);
+  console.log("req.body.name: ", req.body.name);
   try {
     const item = await Item.findOne({ _id: req.params.id });
 
@@ -112,20 +50,17 @@ router.patch("/item/:id", async (req: any, res: any) => {
       item.amount = req.body.amount;
     }
 
-    if (req.body.amount) {
-      item.author = req.body.author;
-    }
-
     if (req.body.active) {
       item.active = req.body.active;
     }
 
     await item.save();
+
     console.log("saved item: ", item);
-    res.send(item);
+    await res.send(item);
   } catch {
     res.status(404);
-    res.send({ error: "Items doesn't exist!" });
+    res.send({ error: "Item doesn't exist!" });
   }
 });
 

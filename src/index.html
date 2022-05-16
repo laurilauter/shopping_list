@@ -11,14 +11,32 @@
     <div id="container">
       <div id="top">
         <h3>Shopping List</h3>
-        <button>BACK</button>
-        <button>ADD</button>
       </div>
-      <br />
-      <div id="middle">Items missing ..</div>
-      <br />
-      <div id="bottom">bottom line</div>
+
+      <div id="item-div">
+        <div id="list-item-div"></div>
+      </div>
+
+      <div id="add-item-div">
+        <input id="input-item" type="text" placeholder="item.." /><br />
+        <input id="input-amount" type="text" placeholder="amount.." /><br />
+      </div>
+
+      <div class="footer">
+        <button id="clear-completed-btn" class="button">
+          <img src="./img/clean.svg" alt="clean" height="64" width="64" />
+        </button>
+        <button id="add-item-btn" class="button">
+          <img src="./img/plus.svg" alt="plus" height="64" width="64" />
+        </button>
+        <button id="back-btn" class="button">
+          <img src="./img/back.svg" alt="back" height="64" width="64" />
+        </button>
+        <button id="insert-item-btn" class="button">
+          <img src="./img/plus.svg" alt="plus" height="64" width="64" />
+        </button>
+      </div>
     </div>
-    <script src="index.js"></script>
+    <script src="./index.js"></script>
   </body>
 </html>

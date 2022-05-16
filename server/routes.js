@@ -11,66 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const express = require("express");
 const cors = require("cors");
 const Item = require("./models/Item");
-const User = require("./models/User");
 const router = express.Router();
-router.use(cors({
-    origin: "http://127.0.0.1:5500",
-}));
-//user routes
-//get all users
-router.get("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const users = yield User.find();
-    res.status(200);
-    res.send(users);
-}));
-//get user by id
-router.get("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield User.findOne({ _id: req.params.id });
-        res.send(user);
-    }
-    catch (_a) {
-        res.status(404);
-        res.send({ error: "User doesn't exist!" });
-    }
-}));
-//create new user
-router.post("/user", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = new User({
-        name: req.body.name,
-    });
-    yield User.create(req.body);
-    res.status(200);
-    res.send(user);
-}));
-//edit user
-router.patch("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const user = yield User.findOne({ _id: req.params.id });
-        if (req.body.name) {
-            user.name = req.body.name;
-        }
-        yield user.save();
-        console.log("saved user: ", user);
-        res.status(200);
-        res.send(user);
-    }
-    catch (_b) {
-        res.status(404);
-        res.send({ error: "User doesn't exist!" });
-    }
-}));
-//delete user
-router.delete("/user/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield User.deleteOne({ _id: req.params.id });
-        res.status(204).send("User deleted");
-    }
-    catch (_c) {
-        res.status(404);
-        res.send({ error: "User doesn't exist!" });
-    }
-}));
+//use cors
+router.use(cors());
 //item routes
 //get all items
 router.get("/item", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -82,7 +25,6 @@ router.post("/item", (req, res) => __awaiter(void 0, void 0, void 0, function* (
     const item = new Item({
         name: req.body.name,
         amount: req.body.amount,
-        author: req.body.author,
         active: req.body.active,
     });
     yield Item.create(req.body);
@@ -94,13 +36,15 @@ router.get("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function
         const item = yield Item.findOne({ _id: req.params.id });
         res.send(item);
     }
-    catch (_d) {
+    catch (_a) {
         res.status(404);
         res.send({ error: "Item doesn't exist!" });
     }
 }));
 //edit item
-router.patch("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.put("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("req.body.active: ", req.body.active);
+    console.log("req.body.name: ", req.body.name);
     try {
         const item = yield Item.findOne({ _id: req.params.id });
         if (req.body.name) {
@@ -109,19 +53,16 @@ router.patch("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, functi
         if (req.body.amount) {
             item.amount = req.body.amount;
         }
-        if (req.body.amount) {
-            item.author = req.body.author;
-        }
         if (req.body.active) {
             item.active = req.body.active;
         }
         yield item.save();
         console.log("saved item: ", item);
-        res.send(item);
+        yield res.send(item);
     }
-    catch (_e) {
+    catch (_b) {
         res.status(404);
-        res.send({ error: "Items doesn't exist!" });
+        res.send({ error: "Item doesn't exist!" });
     }
 }));
 //delete item
@@ -130,7 +71,7 @@ router.delete("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, funct
         yield Item.deleteOne({ _id: req.params.id });
         res.status(204).send("Item deleted");
     }
-    catch (_f) {
+    catch (_c) {
         res.status(404);
         res.send({ error: "Item doesn't exist!" });
     }
