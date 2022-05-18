@@ -54,6 +54,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //collect info
     const item = document.getElementById("input-item") as HTMLInputElement;
     const amount = document.getElementById("input-amount") as HTMLInputElement;
+
     const body: any = {
       name: item.value,
       amount: amount.value,
@@ -65,13 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
     amount.value = "";
 
     //fetch create item
-    //console.log("str body to be sent: ", JSON.stringify({ body }));
+    console.log("str body to be sent: ", JSON.stringify({ body }));
     try {
-      let res = await fetch(`http://localhost:5000/api/item/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      if (body.name) {
+        let res = await fetch(`http://localhost:5000/api/item/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+      }
     } catch (error) {
       console.log("Error", error);
     }

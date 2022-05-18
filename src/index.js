@@ -66,13 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
             item.value = "";
             amount.value = "";
             //fetch create item
-            //console.log("str body to be sent: ", JSON.stringify({ body }));
+            console.log("str body to be sent: ", JSON.stringify({ body }));
             try {
-                let res = yield fetch(`http://localhost:5000/api/item/`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body),
-                });
+                if (body.name) {
+                    let res = yield fetch(`http://localhost:5000/api/item/`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(body),
+                    });
+                }
             }
             catch (error) {
                 console.log("Error", error);

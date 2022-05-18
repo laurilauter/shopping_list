@@ -9,8 +9,12 @@ router.use(cors());
 //item routes
 //get all items
 router.get("/item", async (req: any, res: any) => {
-  const items = await Item.find();
-  res.send(items);
+  try {
+    const items = await Item.find();
+    res.send(items);
+  } catch {
+    res.status(404).send({ error: "Nothing found" });
+  }
 });
 
 //create new item
@@ -20,8 +24,12 @@ router.post("/item", async (req: any, res: any) => {
     amount: req.body.amount,
     active: req.body.active,
   });
-  await Item.create(req.body);
-  res.send(item);
+  try {
+    await Item.create(req.body);
+    res.send(item);
+  } catch {
+    res.status(404).send({ error: "Item doesn't exist!" });
+  }
 });
 
 //get item by id
@@ -30,8 +38,7 @@ router.get("/item/:id", async (req: any, res: any) => {
     const item = await Item.findOne({ _id: req.params.id });
     res.send(item);
   } catch {
-    res.status(404);
-    res.send({ error: "Item doesn't exist!" });
+    res.status(404).send({ error: "Item doesn't exist!" });
   }
 });
 
@@ -59,8 +66,7 @@ router.put("/item/:id", async (req: any, res: any) => {
     console.log("saved item: ", item);
     await res.send(item);
   } catch {
-    res.status(404);
-    res.send({ error: "Item doesn't exist!" });
+    res.status(404).send({ error: "Item doesn't exist!" });
   }
 });
 
@@ -70,8 +76,7 @@ router.delete("/item/:id", async (req: any, res: any) => {
     await Item.deleteOne({ _id: req.params.id });
     res.status(204).send("Item deleted");
   } catch {
-    res.status(404);
-    res.send({ error: "Item doesn't exist!" });
+    res.status(404).send({ error: "Item doesn't exist!" });
   }
 });
 

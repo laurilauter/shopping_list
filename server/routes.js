@@ -17,8 +17,13 @@ router.use(cors());
 //item routes
 //get all items
 router.get("/item", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const items = yield Item.find();
-    res.send(items);
+    try {
+        const items = yield Item.find();
+        res.send(items);
+    }
+    catch (_a) {
+        res.status(404).send({ error: "Nothing found" });
+    }
 }));
 //create new item
 router.post("/item", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -27,8 +32,13 @@ router.post("/item", (req, res) => __awaiter(void 0, void 0, void 0, function* (
         amount: req.body.amount,
         active: req.body.active,
     });
-    yield Item.create(req.body);
-    res.send(item);
+    try {
+        yield Item.create(req.body);
+        res.send(item);
+    }
+    catch (_b) {
+        res.status(404).send({ error: "Item doesn't exist!" });
+    }
 }));
 //get item by id
 router.get("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,9 +46,8 @@ router.get("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function
         const item = yield Item.findOne({ _id: req.params.id });
         res.send(item);
     }
-    catch (_a) {
-        res.status(404);
-        res.send({ error: "Item doesn't exist!" });
+    catch (_c) {
+        res.status(404).send({ error: "Item doesn't exist!" });
     }
 }));
 //edit item
@@ -60,9 +69,8 @@ router.put("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, function
         console.log("saved item: ", item);
         yield res.send(item);
     }
-    catch (_b) {
-        res.status(404);
-        res.send({ error: "Item doesn't exist!" });
+    catch (_d) {
+        res.status(404).send({ error: "Item doesn't exist!" });
     }
 }));
 //delete item
@@ -71,9 +79,8 @@ router.delete("/item/:id", (req, res) => __awaiter(void 0, void 0, void 0, funct
         yield Item.deleteOne({ _id: req.params.id });
         res.status(204).send("Item deleted");
     }
-    catch (_c) {
-        res.status(404);
-        res.send({ error: "Item doesn't exist!" });
+    catch (_e) {
+        res.status(404).send({ error: "Item doesn't exist!" });
     }
 }));
 module.exports = router;

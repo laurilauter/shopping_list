@@ -2,13 +2,12 @@
   "name": "shopping",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
+  "types": "index.ts",
   "scripts": {
-    "start": "node .",
-    "build": "babel --delete-dir-on-start --out-dir dist --copy-files --ignore \"**/__tests__/**,**/__mocks__/**\" --no-copy-ignored src",
-    "start:dev": "nodemon ../dist/server/index.js",
-    "build:dev": "tsc --watch --preserveWatchOutput",
-    "dev": "concurrently \"npm:build:dev\" \"npm:start:dev\""
+    "start": "node index.js",
+    "build": "build",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -18,8 +17,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mongoose": "^6.3.2",
-    "types-json": "^1.2.2"
+    "mongoose": "^6.3.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.12",
@@ -34,5 +32,10 @@
     "typescript": "^4.6.4",
     "webpack": "^5.72.1",
     "webpack-dev-server": "^4.9.0"
+  },
+  "engines": {
+    "node": "16.x",
+    "npm": "8.x",
+    "type": "module"
   }
 }
