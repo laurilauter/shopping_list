@@ -7,6 +7,21 @@ const router = express.Router();
 router.use(cors());
 
 //item routes
+//instructive route
+router.get("/", async (req: any, res: any) => {
+  try {
+    const apiDocs = {
+      "GET all items": "http://localhost:5000/api/item",
+      "POST create item": "http://localhost:5000/api/item",
+      "GET item by id": "http://localhost:5000/api/item:id",
+      "DELETE item by id": "http://localhost:5000/api/item:id",
+    };
+    res.send(apiDocs);
+  } catch {
+    res.status(404).send({ error: "Nothing found" });
+  }
+});
+
 //get all items
 router.get("/item", async (req: any, res: any) => {
   try {
