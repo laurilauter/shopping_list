@@ -9,7 +9,7 @@
     "build": "npm run clean && npx tsc && npm run copy-files",
     "clean": "rm -rf ./dist",
     "copy-files": "cp -R ./public/ ./dist/public",
-    "dev": "nodemon index.js"
+    "dev": "nodemon dist/api/index.js"
   },
   "keywords": [],
   "author": "LauriLauter",
