@@ -97,7 +97,7 @@ router.delete("/item/:id", async (req: any, res: any) => {
 
 // AFTER defining routes: Anything that doesn't match what's above, send back index.html; (the beginning slash ('/') in the string is important!)
 router.get("*", (req: any, res: any) => {
-  res.sendFile(path.join(__dirname + "/../dist/public/index.html"));
+  res.sendFile(path.join(__dirname + "/../public/index.html"));
 });
 
 module.exports = router;
