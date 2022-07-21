@@ -1,11 +1,7 @@
 const express = require("express");
-const cors = require("cors");
 const Item = require("./models/Item");
 const router = express.Router();
 const path = require("path");
-
-//use cors
-router.use(cors());
 
 // Serve static files from the frontend app
 router.use(express.static(path.join(__dirname, "../dist/public")));
