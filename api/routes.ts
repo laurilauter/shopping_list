@@ -2,9 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const Item = require("./models/Item");
 const router = express.Router();
+const path = require("path");
 
 //use cors
 router.use(cors());
+
+// Serve static files from the frontend app
+router.use(express.static(path.join(__dirname, "../dist/public")));
 
 //item routes
 //instructive route
@@ -93,6 +97,11 @@ router.delete("/item/:id", async (req: any, res: any) => {
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }
+});
+
+// AFTER defining routes: Anything that doesn't match what's above, send back index.html; (the beginning slash ('/') in the string is important!)
+router.get("*", (req: any, res: any) => {
+  res.sendFile(path.join(__dirname + "/../dist/public/index.html"));
 });
 
 module.exports = router;
