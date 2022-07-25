@@ -7,6 +7,15 @@ const path = require("path");
 router.use(express.static(path.join(__dirname, "../dist/public")));
 
 //item routes
+//FE
+router.get("../", async (req: any, res: any) => {
+  try {
+    res.send("GET all items");
+  } catch {
+    res.status(404).send({ error: "Nothing found" });
+  }
+});
+
 //instructive route
 router.get("/", async (req: any, res: any) => {
   try {
