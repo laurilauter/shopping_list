@@ -11,16 +11,12 @@ router.use(express.static(path.join(__dirname, "./dist/public")));
 //instructive route
 //FE
 router.get("/", async (req: any, res: any) => {
-  try {
-    res.sendFile(`${__dirname}/index.php`, (err: any) => {
-      if (err) {
-        console.log("error", err);
-        req.send(err.message);
-      }
-    });
-  } catch {
-    res.status(404).send({ error: "Nothing found" });
-  }
+  res.sendFile(`${__dirname}/dist/public/home.html`, (err: any) => {
+    if (err) {
+      console.log("error", err);
+      req.send(err.message);
+    }
+  });
 });
 
 //get all items
