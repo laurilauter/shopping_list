@@ -1,3 +1,5 @@
+const port = process.env.PORT || 5000;
+
 document.addEventListener("DOMContentLoaded", () => {
   //interface for API response object
   interface Data {
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("str body to be sent: ", JSON.stringify({ body }));
     try {
       if (body.name) {
-        let res = await fetch(`http://localhost:5000/api/item/`, {
+        let res = await fetch(`http://localhost:${port}/api/item/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
@@ -91,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //delete one
   async function deleteItem(id: string) {
     try {
-      let res = await fetch(`http://localhost:5000/api/item/${id}`, {
+      let res = await fetch(`http://localhost:${port}/api/item/${id}`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
       });
@@ -103,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //mark as done in db
   async function toggleItemState(activeUpdate: boolean, id: string) {
     try {
-      let res = await fetch(`http://localhost:5000/api/item/${id}`, {
+      let res = await fetch(`http://localhost:${port}/api/item/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ active: activeUpdate.toString() }),
@@ -116,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
   //fetch items
   async function getItems(): Promise<any> {
     try {
-      let res = await fetch("http://localhost:5000/api/item", {
+      let res = await fetch(`http://localhost:${port}/api/item`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
