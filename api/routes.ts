@@ -4,28 +4,20 @@ const router = express.Router();
 const path = require("path");
 
 // Serve static files from the frontend app
-router.use(express.static(path.join(__dirname, "../dist/public")));
+router.use(express.static(path.join(__dirname, "./dist/public")));
 
 //item routes
-//FE
-router.get("../", async (req: any, res: any) => {
-  try {
-    res.send("GET all items");
-  } catch {
-    res.status(404).send({ error: "Nothing found" });
-  }
-});
 
 //instructive route
+//FE
 router.get("/", async (req: any, res: any) => {
   try {
-    const apiDocs = {
-      "GET all items": "http://localhost:5000/api/item",
-      "POST create item": "http://localhost:5000/api/item",
-      "GET item by id": "http://localhost:5000/api/item:id",
-      "DELETE item by id": "http://localhost:5000/api/item:id",
-    };
-    res.send(apiDocs);
+    res.sendFile(`${__dirname}/index.php`, (err: any) => {
+      if (err) {
+        console.log("error", err);
+        req.send(err.message);
+      }
+    });
   } catch {
     res.status(404).send({ error: "Nothing found" });
   }
