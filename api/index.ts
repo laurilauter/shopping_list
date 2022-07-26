@@ -17,7 +17,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   app.use("/", express.static("./dist/public"));
 
   app.listen(port, () => {
-    console.log(`Server running at port:${port}/`);
+    console.log(`Server running at port:${port}`);
   });
 });
 
