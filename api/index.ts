@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose"); // new
 const routes = require("./routes");
 const dotenv = require("dotenv");
+var path = require("path");
 const port = process.env.PORT || 5000;
 
 dotenv.config();
@@ -20,8 +21,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   // required to serve SPA on heroku production without routing problems; it will skip only 'api' calls
   //if (process.env.NODE_ENV === "production") {
   app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
-    res.sendFile(__dirname + "../public/index.html");
-    //console.log("path: ", path.join(__dirname, "dist/public/index.html"));
+    res.sendFile(path.join(__dirname + "/../public/index.html"));
   });
   //}
 
