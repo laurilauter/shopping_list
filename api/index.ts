@@ -16,7 +16,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   /* serve your front (stored in the public folder) */
   //app.use("/", express.static("./dist/public"));
 
-  app.use(express.static(path.join(__dirname, "client", "build")));
+  app.use(express.static(path.join(__dirname, "dist", "public")));
   // required to serve SPA on heroku production without routing problems; it will skip only 'api' calls
   if (process.env.NODE_ENV === "production") {
     app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
