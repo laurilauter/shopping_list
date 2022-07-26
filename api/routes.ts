@@ -2,23 +2,18 @@ const express = require("express");
 const Item = require("./models/Item");
 const router = express.Router();
 const path = require("path");
+//const cors = require("cors");
 
 // Serve static files from the frontend app
-router.use(express.static(path.join(__dirname, "./dist/public")));
+//router.use(express.static(path.join(__dirname, "./dist/public")));
+
+// router.use(
+//   cors({
+//     origin: "http://127.0.0.1:5000/",
+//   })
+// );
 
 //item routes
-
-//instructive route
-//FE
-router.get("/", async (req: any, res: any) => {
-  res.sendFile(`${__dirname}/dist/public/home.html`, (err: any) => {
-    if (err) {
-      console.log("error", err);
-      req.send(err.message);
-    }
-  });
-});
-
 //get all items
 router.get("/item", async (req: any, res: any) => {
   try {
