@@ -20,7 +20,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   // required to serve SPA on heroku production without routing problems; it will skip only 'api' calls
   //if (process.env.NODE_ENV === "production") {
   app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
-    res.sendFile("index.html");
+    res.sendFile(`${__dirname}/index.html");
     //console.log("path: ", path.join(__dirname, "dist/public/index.html"));
   });
   //}
