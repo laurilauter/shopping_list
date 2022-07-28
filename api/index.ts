@@ -15,7 +15,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   app.use("/api", routes);
 
   /* serve your front (stored in the public folder) */
-  app.use("/", express.static(path.join(__dirname, "../public/public")));
+  app.use("/", express.static(path.join(__dirname, "../public")));
   //2x public is a temporary Heroku fix
 
   //app.use(express.static(path.join(__dirname, "dist", "public")));
@@ -23,7 +23,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   //if (process.env.NODE_ENV === "production") {
 
   app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
-    res.sendFile(path.join(__dirname, "../public/public/index.html"));
+    res.sendFile(path.join(__dirname, "../public/index.html"));
     //2x public is a temporary Heroku fix
     // console.log("BrokenPath ", path.join(__dirname, "../public/index.html"));
     // console.log("BrokenPath ", path.join(__dirname, "../public/index.html"));
