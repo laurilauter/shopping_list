@@ -22,6 +22,7 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   //if (process.env.NODE_ENV === "production") {
   app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
     res.sendFile(path.join("./app/dist/public/index.html")); //Error: ENOENT: no such file or directory, stat '/dist/public/index.html'
+    console.log("BrokenPath ", path.join("./app/dist/public/index.html"));
     // res.sendFile(path.join(__dirname + "/../public/index.html"));
   });
   //}
