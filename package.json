@@ -8,7 +8,7 @@
     "start": "node dist/api/index.js",
     "build": "npm run clean && npx tsc && npm run copy-files",
     "clean": "rm -rf ./dist",
-    "copy-files": "cp -R ./public/ ./dist/public",
+    "copy-files": "cp -R ./public/ ./dist",
     "dev": "nodemon dist/api/index.js"
   },
   "keywords": [],
