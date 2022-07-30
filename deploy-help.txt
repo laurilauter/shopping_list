@@ -1,0 +1,14 @@
+Local edit
+"copy-files": "cp -R ./public/ ./dist/public",
+
+For Heroku change to this
+"copy-files": "cp -R ./public/ ./dist",
+
+
+Heroku cli commands
+
+heroku logs
+
+heroku run bash -a shopping-list-v2
+$ cd app
+$ exit

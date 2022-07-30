@@ -1,0 +1,6 @@
+{
+  "watch": ["api", "public"],
+  "ext": "ts,json",
+  "ignore": [""],
+  "exec": "npm run build && node dist/api/index.js"
+}
