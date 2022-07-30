@@ -11,8 +11,10 @@
   "scripts": {
     "start": "node dist/api/index.js",
     "build": "npm run clean && npx tsc && npm run copy-files",
+    "local-build": "npm run clean && npx tsc && npm run local-copy-files",
     "clean": "rm -rf ./dist",
-    "copy-files": "cp -R ./public/ ./dist/public",
+    "copy-files": "cp -R ./public/ ./dist",
+    "local-copy-files": "cp -R ./public/ ./dist/public",
     "dev": "nodemon"
   },
   "keywords": [],
