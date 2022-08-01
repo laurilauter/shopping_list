@@ -18,7 +18,6 @@ router.get("/item", async (req: any, res: any) => {
 router.post("/item", async (req: any, res: any) => {
   const item = new Item({
     name: req.body.name,
-    amount: req.body.amount,
     active: req.body.active,
   });
   try {
@@ -48,10 +47,6 @@ router.put("/item/:id", async (req: any, res: any) => {
 
     if (req.body.name) {
       item.name = req.body.name;
-    }
-
-    if (req.body.amount) {
-      item.amount = req.body.amount;
     }
 
     if (req.body.active) {

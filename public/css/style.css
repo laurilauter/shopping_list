@@ -1,6 +1,6 @@
 /* Genreal */
 /* div {
-  border: 1px solid grey;
+  border: 1px solid rgb(176, 38, 38);
 } */
 
 /* Layout */
@@ -39,12 +39,17 @@ body {
   padding: 5px;
   font-family: inherit;
   font-size: 0.6em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 #add-item-div {
   width: 90%;
   margin-left: 5%;
-  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .footer {
@@ -59,32 +64,43 @@ body {
 
 /* styling */
 
-.false {
+.active-false {
   text-decoration: line-through;
+  opacity: 0.5;
 }
 
 .hide {
   display: none;
 }
 
-.delete-btn {
-  margin-top: 10px;
+button {
   float: right;
+  height: 30px;
 }
 
 input[type="text"] {
-  width: 70%;
-  padding: 20px;
-  margin: 20px;
-  border: 0;
-  box-shadow: 0 0 15px 4px rgba(0, 0, 0, 0.2);
-  border-radius: 1em;
+  margin-left: 0%;
+  width: 80%;
+  padding: 5px;
+  margin: -5px;
+  border: 2px solid silver;
+  box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.2);
+  border-radius: 0.25em;
   font-family: inherit;
   font-size: 0.6em;
 }
 
+.cursor-pointer {
+  cursor: pointer;
+}
+
 /* button styles */
-.button {
+button {
+  border-radius: 0.25em;
+  cursor: pointer;
+}
+
+/* .buttonNOT {
   height: fit-content;
   width: auto;
   border: none;
@@ -95,7 +111,7 @@ input[type="text"] {
   @media screen and (-ms-high-contrast: active) {
     border: 2px solid currentcolor;
   }
-}
+} */
 
 .button:hover {
   opacity: 0.7;

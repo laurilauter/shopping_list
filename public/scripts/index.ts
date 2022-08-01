@@ -3,67 +3,88 @@ document.addEventListener("DOMContentLoaded", () => {
   interface Data {
     _id: string;
     name: string;
-    amount: string;
     active: boolean;
   }
 
-  //switch to add item view
-  const addItem = () => {
-    //hide
-    document.getElementById("item-div")?.classList.add("hide");
-    document.getElementById("clear-completed-btn")?.classList.add("hide");
-    document.getElementById("add-item-btn")?.classList.add("hide");
-    //show
-    document.getElementById("add-item-div")?.classList.remove("hide");
-    document.getElementById("back-btn")?.classList.remove("hide");
-    document.getElementById("insert-item-btn")?.classList.remove("hide");
-  };
-  //move back
-  const moveBack = () => {
-    //show
-    document.getElementById("item-div")?.classList.remove("hide");
-    document.getElementById("clear-completed-btn")?.classList.remove("hide");
-    document.getElementById("add-item-btn")?.classList.remove("hide");
-    //hide
-    document.getElementById("add-item-div")?.classList.add("hide");
-    document.getElementById("back-btn")?.classList.add("hide");
-    document.getElementById("insert-item-btn")?.classList.add("hide");
-  };
-
   //clearCompleted items from list
-  async function clearCompleted() {
-    let containers = document.getElementsByClassName(
-      "false"
-    ) as HTMLCollectionOf<Element>;
-    for (var i = 0; i < containers.length; i++) {
-      const deleteId: string = containers
-        .item(i)
-        ?.getAttribute("id")!
-        .split("-")[1]!;
-      deleteItem(deleteId);
-      //console.log("just deleted: ", deleteId);
+  // async function deleteCompleted() {
+  //   let containers = document.getElementsByClassName(
+  //     "false"
+  //   ) as HTMLCollectionOf<Element>;
+  //   for (var i = 0; i < containers.length; i++) {
+  //     const deleteId: string = containers
+  //       .item(i)
+  //       ?.getAttribute("id")!
+  //       .split("-")[1]!;
+  //     deleteItem(deleteId);
+  //     //console.log("just deleted: ", deleteId);
+  //   }
+  //   //clear items list
+  //   clearItems();
+  //   //relaod items
+  //   getItems();
+  // }
+
+  //hideCompleted items from list
+  function toggleCompletedItems() {
+    console.log("toggleCompletedItems enterd");
+    //get elements, that have "active-false"
+    const hiddenItems = document.querySelectorAll(".active-false");
+    console.log("hiddenItems ", hiddenItems);
+
+    //completed items add/remove class hidden depending on the button state
+    //
+    //get toggle button state
+    const getToggleButtonState = (): boolean => {
+      //get the toggle button
+      const toggleButton = document.getElementById(
+        "hide-completed-btn"
+      ) as HTMLInputElement;
+
+      //set state to true and flip if required
+      let state: boolean = true;
+      if (toggleButton.classList.contains("completed-visible")) {
+        toggleButton.classList.remove("completed-visible");
+        toggleButton.classList.add("completed-hidden");
+        toggleButton.innerHTML = "SHOW";
+
+        state = false;
+      } else {
+        toggleButton.classList.remove("completed-hidden");
+        toggleButton.classList.add("completed-visible");
+        toggleButton.innerHTML = "HIDE";
+      }
+      //should the button label be flipped here?
+      //if(){};
+      console.log("state ", state);
+      return state;
+    };
+
+    const buttonState = getToggleButtonState();
+
+    //toggle gidden class on items depending on button state
+    for (let i = 0; i < hiddenItems.length; i++) {
+      hiddenItems[i].parentElement?.classList.remove("hide");
+      if (buttonState === false) {
+        hiddenItems[i].parentElement?.classList.add("hide");
+      }
     }
-    //clear items list
-    clearItems();
-    //relaod items
-    getItems();
   }
 
   //insert item into db
   async function insertItem() {
-    //collect info
-    const item = document.getElementById("input-item") as HTMLInputElement;
-    const amount = document.getElementById("input-amount") as HTMLInputElement;
+    //collect info from input
+    const itemToBeInsserted = document.getElementById(
+      "input-item"
+    ) as HTMLInputElement;
 
     const body: any = {
-      name: item.value,
-      amount: amount.value,
+      name: itemToBeInsserted.value,
       active: true,
     };
 
     //clear inputs
-    item.value = "";
-    amount.value = "";
+    itemToBeInsserted.value = "";
 
     //fetch create item
     console.log("str body to be sent: ", JSON.stringify({ body }));
@@ -79,8 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Error", error);
     }
 
-    //change view
-    moveBack();
     //clear items list
     clearItems();
     //relaod items
@@ -113,6 +132,57 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  //edit item in db
+  async function editItem(itemUpdate: string, id: string) {
+    try {
+      let res = await fetch(`/api/item/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: itemUpdate.toString() }),
+      });
+    } catch (error) {
+      console.log("Error", error);
+    }
+    clearItems();
+    getItems();
+  }
+
+  //get edited input
+  function getEditedInput(oldValue: string): string {
+    let result: string;
+    result = oldValue + " refresher";
+    return result;
+  }
+
+  function startItemEdit(button: any, oldValue: string, id: string) {
+    //get new value
+    button.parentElement!.innerHTML = `
+    <input id="edit-item" type="text" value="${oldValue}" /><br />
+    <button class="" id="edit-item-${id}">EDIT</button>
+    `;
+    const insertEditedItemBtn = document.getElementById(
+      `edit-item-${id}`
+    ) as HTMLElement;
+
+    const newItemValue = document.getElementById(
+      "edit-item"
+    ) as HTMLInputElement;
+    console.log("newItemValue ", newItemValue);
+
+    insertEditedItemBtn.addEventListener("click", () => {
+      editItem(newItemValue.value, id);
+    });
+
+    // listen to Enter on edit item
+    newItemValue.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        insertEditedItemBtn.click();
+      }
+    });
+  }
+
   //fetch items
   async function getItems(): Promise<any> {
     try {
@@ -129,37 +199,44 @@ document.addEventListener("DOMContentLoaded", () => {
         const itemDiv = document.createElement("div");
         itemDiv.classList.add("item-container");
         itemDiv.innerHTML = `
-          <span class="${element.active}" id="name-${element._id}">${element.name}</span>
-          <span class="amount-span">${element.amount}</span>
-          <button class="delete-btn button" id="${element._id}">
-          <img src="./img/delete.svg" alt="delete" height="24" width="24" />
-          </button>
+          <span class="active-${element.active} cursor-pointer" id="name-${element._id}">${element.name}</span>
+          <button class="" id="edit-${element._id}">EDIT</button>
+          <button class="delete-btn button" id="delete-${element._id}">DELETE</button>
           `;
         document.getElementById("list-item-div")?.appendChild(itemDiv);
-        //add listener to x btn
+        //add listener to item name for strikethrough
+        const nameBtn = document.getElementById(`name-${element._id}`);
+        nameBtn?.addEventListener("click", () => {
+          //toggle true/false - cant use classlist.toggle because of double entry
+          let activeUpdate: boolean;
+          if (nameBtn?.classList.contains("active-true")) {
+            nameBtn?.classList.replace("active-true", "active-false");
+            activeUpdate = false;
+          } else {
+            nameBtn?.classList.replace("active-false", "active-true");
+            activeUpdate = true;
+          }
+          //goto database and fetch active: true/false by id
+          toggleItemState(activeUpdate, element._id);
+        });
+
+        //add listener to edit btn
+        const editBtn = document.getElementById(
+          `edit-${element._id}`
+        ) as HTMLInputElement;
+        editBtn?.addEventListener("click", () => {
+          startItemEdit(editBtn, element.name, element._id);
+        });
+
+        //add listener to delete btn
         const deleteBtn = document.getElementById(
-          element._id
+          `delete-${element._id}`
         ) as HTMLInputElement;
         deleteBtn?.addEventListener("click", () => {
           //remove node
           deleteBtn.parentElement!.remove();
           //fetch delete from db
           deleteItem(element._id);
-        });
-        //add listener to item name for strikethrough
-        const nameBtn = document.getElementById(`name-${element._id}`);
-        nameBtn?.addEventListener("click", () => {
-          //toggle true/false - cant use classlist.toggle because of double entry
-          let activeUpdate: boolean;
-          if (nameBtn?.classList.contains("true")) {
-            nameBtn?.classList.replace("true", "false");
-            activeUpdate = false;
-          } else {
-            nameBtn?.classList.replace("false", "true");
-            activeUpdate = true;
-          }
-          //goto database and fetch active: true/false by id
-          toggleItemState(activeUpdate, element._id);
         });
       });
     } catch (error) {
@@ -182,15 +259,17 @@ document.addEventListener("DOMContentLoaded", () => {
     listItemDiv.innerHTML = "";
   }
 
-  //add listener to add item btn
-  const addBtn = document.getElementById("add-item-btn") as HTMLInputElement;
-  addBtn?.addEventListener("click", addItem);
+  //add listener to hide-completed-btn
+  const hideBtn = document.getElementById(
+    "hide-completed-btn"
+  ) as HTMLInputElement;
+  hideBtn?.addEventListener("click", toggleCompletedItems);
 
   //add listener to clear-completed-btn
-  const clearBtn = document.getElementById(
-    "clear-completed-btn"
-  ) as HTMLInputElement;
-  clearBtn?.addEventListener("click", clearCompleted);
+  // const clearBtn = document.getElementById(
+  //   "clear-completed-btn"
+  // ) as HTMLInputElement;
+  // clearBtn?.addEventListener("click", clearCompleted);
 
   //add listener to insert item btn
   const insertBtn = document.getElementById(
@@ -198,12 +277,15 @@ document.addEventListener("DOMContentLoaded", () => {
   ) as HTMLInputElement;
   insertBtn?.addEventListener("click", insertItem);
 
-  //add listener to back btn
-  const backBtn = document.getElementById("back-btn") as HTMLInputElement;
-  backBtn?.addEventListener("click", moveBack);
-
-  //hide add item view
-  document.getElementById("add-item-div")?.classList.add("hide");
-  document.getElementById("back-btn")?.classList.add("hide");
-  document.getElementById("insert-item-btn")?.classList.add("hide");
+  // Listen to Enter at insert new item
+  const itemToBeInsserted = document.getElementById(
+    "input-item"
+  ) as HTMLInputElement;
+  itemToBeInsserted.addEventListener("keypress", function (event) {
+    if (event.key === "Enter") {
+      // Cancel the default action, if needed
+      event.preventDefault();
+      insertBtn.click();
+    }
+  });
 });

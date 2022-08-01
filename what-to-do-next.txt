@@ -1,0 +1,12 @@
+Changes to implement
+
+4. Add a menu button to access additional options like "delete all DONE", "delete list",
+login logout etc, list of lists
+
+6. Add login/logout functionality
+
+
+What to change on the existing backend
+-----
+- Delete DONE items should work with an array
+- Investigate if it makes sense to use classes for items
