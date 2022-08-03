@@ -22,7 +22,7 @@ router.post("/item", async (req: any, res: any) => {
   });
   try {
     await Item.create(req.body);
-    res.send(item);
+    res.status(200).send(item);
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }
@@ -32,7 +32,7 @@ router.post("/item", async (req: any, res: any) => {
 router.get("/item/:id", async (req: any, res: any) => {
   try {
     const item = await Item.findOne({ _id: req.params.id });
-    res.send(item);
+    res.status(200).send(item);
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }
@@ -40,10 +40,11 @@ router.get("/item/:id", async (req: any, res: any) => {
 
 //edit item
 router.put("/item/:id", async (req: any, res: any) => {
-  console.log("req.body.active: ", req.body.active);
-  console.log("req.body.name: ", req.body.name);
+  // console.log("req.body.active: ", req.body.active);
+  // console.log("req.body.name: ", req.body.name);
   try {
     const item = await Item.findOne({ _id: req.params.id });
+    //TODO: change this to findOneAndUpdate(filter, update);
 
     if (req.body.name) {
       item.name = req.body.name;
@@ -53,10 +54,10 @@ router.put("/item/:id", async (req: any, res: any) => {
       item.active = req.body.active;
     }
 
-    await item.save();
+    const savedItem = await Item.save();
 
-    console.log("saved item: ", item);
-    await res.send(item);
+    //console.log("saved item: ", item);
+    await res.status(200).send("Saved item:", savedItem);
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }
@@ -65,8 +66,9 @@ router.put("/item/:id", async (req: any, res: any) => {
 //delete item
 router.delete("/item/:id", async (req: any, res: any) => {
   try {
-    await Item.deleteOne({ _id: req.params.id });
-    res.status(204).send("Item deleted");
+    await Item.findOneAndRemove({ _id: req.params.id });
+    //console.log("res ", res);
+    res.status(200).send("item removed");
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }

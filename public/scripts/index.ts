@@ -6,6 +6,11 @@ document.addEventListener("DOMContentLoaded", () => {
     active: boolean;
   }
 
+  interface inputData {
+    name: string;
+    active: boolean;
+  }
+
   //clearCompleted items from list
   // async function deleteCompleted() {
   //   let containers = document.getElementsByClassName(
@@ -78,16 +83,16 @@ document.addEventListener("DOMContentLoaded", () => {
       "input-item"
     ) as HTMLInputElement;
 
-    const body: any = {
+    const body: inputData = {
       name: itemToBeInsserted.value,
       active: true,
     };
 
-    //clear inputs
+    //clear input
     itemToBeInsserted.value = "";
 
     //fetch create item
-    console.log("str body to be sent: ", JSON.stringify({ body }));
+    //console.log("string body to be sent: ", JSON.stringify({ body }));
     try {
       if (body.name) {
         let res = await fetch(`/api/item/`, {
@@ -95,16 +100,15 @@ document.addEventListener("DOMContentLoaded", () => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
+
+        let data: any = await res.json();
+        console.log("response from BE ", data);
+        //add list item
+        addListItem(data);
       }
     } catch (error) {
       console.log("Error", error);
     }
-
-    //clear items list
-    clearItems();
-    //relaod items
-    getItems();
-    //console.log("relaoded items after add");
   }
 
   //delete one
@@ -140,18 +144,15 @@ document.addEventListener("DOMContentLoaded", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: itemUpdate.toString() }),
       });
+      let data: any = await res.json();
+      console.log("edited Data from DB", data);
     } catch (error) {
       console.log("Error", error);
     }
+
+    //TODO: THE REDRAW SHOULD BE LIMITED TO ONE ITEM
     clearItems();
     getItems();
-  }
-
-  //get edited input
-  function getEditedInput(oldValue: string): string {
-    let result: string;
-    result = oldValue + " refresher";
-    return result;
   }
 
   function startItemEdit(button: any, oldValue: string, id: string) {
@@ -167,7 +168,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newItemValue = document.getElementById(
       "edit-item"
     ) as HTMLInputElement;
-    console.log("newItemValue ", newItemValue);
+    //console.log("newItemValue ", newItemValue);
 
     insertEditedItemBtn.addEventListener("click", () => {
       editItem(newItemValue.value, id);
@@ -196,52 +197,56 @@ document.addEventListener("DOMContentLoaded", () => {
       //console.log("data: ", data);
       //console.log("typeof data: ", typeof data);
       data.forEach((element: Data) => {
-        const itemDiv = document.createElement("div");
-        itemDiv.classList.add("item-container");
-        itemDiv.innerHTML = `
-          <span class="active-${element.active} cursor-pointer" id="name-${element._id}">${element.name}</span>
-          <button class="" id="edit-${element._id}">EDIT</button>
-          <button class="delete-btn button" id="delete-${element._id}">DELETE</button>
-          `;
-        document.getElementById("list-item-div")?.appendChild(itemDiv);
-        //add listener to item name for strikethrough
-        const nameBtn = document.getElementById(`name-${element._id}`);
-        nameBtn?.addEventListener("click", () => {
-          //toggle true/false - cant use classlist.toggle because of double entry
-          let activeUpdate: boolean;
-          if (nameBtn?.classList.contains("active-true")) {
-            nameBtn?.classList.replace("active-true", "active-false");
-            activeUpdate = false;
-          } else {
-            nameBtn?.classList.replace("active-false", "active-true");
-            activeUpdate = true;
-          }
-          //goto database and fetch active: true/false by id
-          toggleItemState(activeUpdate, element._id);
-        });
-
-        //add listener to edit btn
-        const editBtn = document.getElementById(
-          `edit-${element._id}`
-        ) as HTMLInputElement;
-        editBtn?.addEventListener("click", () => {
-          startItemEdit(editBtn, element.name, element._id);
-        });
-
-        //add listener to delete btn
-        const deleteBtn = document.getElementById(
-          `delete-${element._id}`
-        ) as HTMLInputElement;
-        deleteBtn?.addEventListener("click", () => {
-          //remove node
-          deleteBtn.parentElement!.remove();
-          //fetch delete from db
-          deleteItem(element._id);
-        });
+        addListItem(element);
       });
     } catch (error) {
       console.log("Error", error);
     }
+  }
+
+  function addListItem(element: Data) {
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("item-container");
+    itemDiv.innerHTML = `
+          <span class="active-${element.active} cursor-pointer" id="name-${element._id}">${element.name}</span>
+          <button class="" id="edit-${element._id}">EDIT</button>
+          <button class="delete-btn button" id="delete-${element._id}">DELETE</button>
+          `;
+    document.getElementById("list-item-div")?.appendChild(itemDiv);
+    //add listener to item name for strikethrough
+    const nameBtn = document.getElementById(`name-${element._id}`);
+    nameBtn?.addEventListener("click", () => {
+      //toggle true/false - cant use classlist.toggle because of double entry
+      let activeUpdate: boolean;
+      if (nameBtn?.classList.contains("active-true")) {
+        nameBtn?.classList.replace("active-true", "active-false");
+        activeUpdate = false;
+      } else {
+        nameBtn?.classList.replace("active-false", "active-true");
+        activeUpdate = true;
+      }
+      //goto database and fetch active: true/false by id
+      toggleItemState(activeUpdate, element._id);
+    });
+
+    //add listener to edit btn
+    const editBtn = document.getElementById(
+      `edit-${element._id}`
+    ) as HTMLInputElement;
+    editBtn?.addEventListener("click", () => {
+      startItemEdit(editBtn, element.name, element._id);
+    });
+
+    //add listener to delete btn
+    const deleteBtn = document.getElementById(
+      `delete-${element._id}`
+    ) as HTMLInputElement;
+    deleteBtn?.addEventListener("click", () => {
+      //remove node
+      deleteBtn.parentElement!.remove();
+      //fetch delete from db
+      deleteItem(element._id);
+    });
   }
 
   //load inital items list
