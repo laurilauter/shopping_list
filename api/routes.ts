@@ -8,7 +8,7 @@ const path = require("path");
 router.get("/item", async (req: any, res: any) => {
   try {
     const items = await Item.find();
-    res.send(items);
+    res.status(200).send(items);
   } catch {
     res.status(404).send({ error: "Nothing found" });
   }
@@ -40,24 +40,27 @@ router.get("/item/:id", async (req: any, res: any) => {
 
 //edit item
 router.put("/item/:id", async (req: any, res: any) => {
-  // console.log("req.body.active: ", req.body.active);
-  // console.log("req.body.name: ", req.body.name);
+  //console.log("req.body.active: ", req.body.active);
+  console.log("req.body.name: ", req.body.name);
+  console.log("req.body.id: ", req.body.id);
+  console.log("");
   try {
-    const item = await Item.findOne({ _id: req.params.id });
+    //const item = await Item.findOne({ _id: req.params.id });
+    const itemToEdit = await Item.findOne({ _id: req.params.id });
     //TODO: change this to findOneAndUpdate(filter, update);
 
     if (req.body.name) {
-      item.name = req.body.name;
+      itemToEdit.name = req.body.name;
     }
 
     if (req.body.active) {
-      item.active = req.body.active;
+      itemToEdit.active = req.body.active;
     }
 
-    const savedItem = await Item.save();
+    const savedItem = await itemToEdit.save();
 
     //console.log("saved item: ", item);
-    await res.status(200).send("Saved item:", savedItem);
+    await res.status(200).send(savedItem);
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });
   }

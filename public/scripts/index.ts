@@ -91,8 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
     //clear input
     itemToBeInsserted.value = "";
 
-    //fetch create item
-    //console.log("string body to be sent: ", JSON.stringify({ body }));
+    //create new item
     try {
       if (body.name) {
         let res = await fetch(`/api/item/`, {
@@ -138,11 +137,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //edit item in db
   async function editItem(itemUpdate: string, id: string) {
+    console.log("itemUpdate ", itemUpdate, "id ", id);
     try {
       let res = await fetch(`/api/item/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: itemUpdate.toString() }),
+        body: JSON.stringify({
+          id: id,
+          name: itemUpdate,
+          //active: active,
+        }),
       });
       let data: any = await res.json();
       console.log("edited Data from DB", data);
@@ -151,11 +155,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     //TODO: THE REDRAW SHOULD BE LIMITED TO ONE ITEM
+    //Here the parent div of the input box, then
+    //creat a child for it with addListItem(element: Data)
     clearItems();
     getItems();
   }
 
-  function startItemEdit(button: any, oldValue: string, id: string) {
+  function startItemEdit(button: HTMLElement, oldValue: string, id: string) {
     //get new value
     button.parentElement!.innerHTML = `
     <input id="edit-item" type="text" value="${oldValue}" /><br />
@@ -168,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newItemValue = document.getElementById(
       "edit-item"
     ) as HTMLInputElement;
-    //console.log("newItemValue ", newItemValue);
+    console.log("newItemValue ", newItemValue, "id ", id);
 
     insertEditedItemBtn.addEventListener("click", () => {
       editItem(newItemValue.value, id);

@@ -79,10 +79,12 @@ button {
   height: 30px;
 }
 
-input[type="text"] {
+input[type="text"],
+.edit-item {
   margin-left: 0%;
   width: 80%;
-  padding: 5px;
+  height: 2em;
+  padding: 0px;
   margin: -5px;
   border: 2px solid silver;
   box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.2);

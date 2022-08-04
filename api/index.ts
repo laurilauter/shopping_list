@@ -21,7 +21,6 @@ mongoose.connect(MONGO_URI, { useNewUrlParser: true }).then(() => {
   app.get(/^((?!(api)).)*$/, (req: any, res: any) => {
     res.sendFile(path.join(__dirname, "../public/index.html"));
   });
-  //}
 
   app.listen(port, () => {
     console.log(`Server running at: http://localhost:${port}`);

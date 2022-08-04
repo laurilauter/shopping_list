@@ -1,12 +1,9 @@
 Changes to implement
 
 UI
-- Add item
-Instead of fetching a new list from DB after addition wait for server response 200
-and add the item localy, using data from that response
-
 - Add a menu button to access additional options like "delete all DONE", "delete list",
 login logout etc, list of lists
 
-- Add login/logout functionality
+- Fix the visuals
+
 
