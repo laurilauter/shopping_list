@@ -2,5 +2,5 @@
   "watch": ["api", "public"],
   "ext": "ts,json,html,css",
   "ignore": [""],
-  "exec": "npm run local-build && node dist/api/index.js"
+  "exec": "npm run local-build && node dist/api/server.js"
 }

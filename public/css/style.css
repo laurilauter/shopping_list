@@ -1,7 +1,7 @@
 /* Genreal */
-/* div {
+div {
   border: 1px solid rgb(176, 38, 38);
-} */
+}
 
 /* Layout */
 
@@ -10,7 +10,6 @@ body {
   background-color: silver;
   margin: 0;
   font-family: "Roboto", sans-serif;
-  font-size: 1.6em;
 }
 
 .container {
@@ -25,39 +24,40 @@ body {
   width: 90%;
   margin-left: 5%;
   text-align: center;
+  font-size: 2em;
 }
 
 #item-div {
   width: 90%;
   margin-left: 5%;
-}
-
-#list-item-div {
-  height: 80%;
+  font-size: 1.6em;
 }
 
 .item-container {
-  padding: 5px;
-  font-family: inherit;
-  font-size: 0.6em;
+  padding: 0.25em;
+  margin: 0.25em;
+  height: 1em;
+}
+
+.input-item-container {
+  padding: 0.25em;
+  margin: 0.25em;
+  height: 1em;
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  align-items: center;
 }
 
 #add-item-div {
   width: 90%;
   margin-left: 5%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  font-size: 1.6em;
 }
 
 .footer {
   margin-top: 30px;
-  padding: 5px;
   height: 10%;
-  width: 100%;
+  margin-left: 5%;
+  width: 90%;
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -74,23 +74,22 @@ body {
   display: none;
 }
 
-button {
+.btn {
   float: right;
-  height: 30px;
+  margin-left: 0.5em;
+  height: 2em;
 }
 
-input[type="text"],
-.edit-item {
-  margin-left: 0%;
-  width: 80%;
-  height: 2em;
-  padding: 0px;
-  margin: -5px;
+.item-span {
+  float: left;
+}
+
+input[type="text"] {
+  height: 1em;
   border: 2px solid silver;
-  box-shadow: 0 0 0px 0px rgba(0, 0, 0, 0.2);
   border-radius: 0.25em;
   font-family: inherit;
-  font-size: 0.6em;
+  font-size: 1em;
 }
 
 .cursor-pointer {
@@ -102,19 +101,6 @@ button {
   border-radius: 0.25em;
   cursor: pointer;
 }
-
-/* .buttonNOT {
-  height: fit-content;
-  width: auto;
-  border: none;
-  background-color: transparent;
-  font-family: inherit;
-  cursor: pointer;
-
-  @media screen and (-ms-high-contrast: active) {
-    border: 2px solid currentcolor;
-  }
-} */
 
 .button:hover {
   opacity: 0.7;

@@ -1,34 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   //interface for API response object
-  interface Data {
+  interface responseData {
     _id: string;
     name: string;
     active: boolean;
   }
-
-  interface inputData {
+  //interface for API input
+  interface requestData {
     name: string;
     active: boolean;
   }
-
-  //clearCompleted items from list
-  // async function deleteCompleted() {
-  //   let containers = document.getElementsByClassName(
-  //     "false"
-  //   ) as HTMLCollectionOf<Element>;
-  //   for (var i = 0; i < containers.length; i++) {
-  //     const deleteId: string = containers
-  //       .item(i)
-  //       ?.getAttribute("id")!
-  //       .split("-")[1]!;
-  //     deleteItem(deleteId);
-  //     //console.log("just deleted: ", deleteId);
-  //   }
-  //   //clear items list
-  //   clearItems();
-  //   //relaod items
-  //   getItems();
-  // }
 
   //hideCompleted items from list
   function toggleCompletedItems() {
@@ -51,16 +32,15 @@ document.addEventListener("DOMContentLoaded", () => {
       if (toggleButton.classList.contains("completed-visible")) {
         toggleButton.classList.remove("completed-visible");
         toggleButton.classList.add("completed-hidden");
-        toggleButton.innerHTML = "SHOW";
+        toggleButton.innerHTML = "SHOW COMPLETED";
 
         state = false;
       } else {
         toggleButton.classList.remove("completed-hidden");
         toggleButton.classList.add("completed-visible");
-        toggleButton.innerHTML = "HIDE";
+        toggleButton.innerHTML = "HIDE COMPLETED";
       }
       //should the button label be flipped here?
-      //if(){};
       console.log("state ", state);
       return state;
     };
@@ -76,6 +56,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  //add list item
+  function addListItem(element: responseData) {
+    const itemDiv = document.createElement("div");
+    itemDiv.classList.add("item-container");
+    itemDiv.innerHTML = `
+          <span class="item-span active-${element.active} cursor-pointer" id="name-${element._id}">${element.name}</span>
+          <button class="delete-btn btn cursor-pointer" id="delete-${element._id}">DELETE</button>
+          <button class="edit-btn btn cursor-pointer" id="edit-${element._id}">EDIT</button>
+          `;
+    document.getElementById("list-item-div")?.appendChild(itemDiv);
+
+    addEventListenersToItem(element);
+  }
+
   //insert item into db
   async function insertItem() {
     //collect info from input
@@ -83,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "input-item"
     ) as HTMLInputElement;
 
-    const body: inputData = {
+    const body: requestData = {
       name: itemToBeInsserted.value,
       active: true,
     };
@@ -135,8 +129,50 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  //NOT ADDING EVENT LISTENERS TO NEW ITEMS
+  //Add event listeners to item name, edit and delete buttons after initial draw, insertion and edit
+  async function addEventListenersToItem(element: responseData) {
+    //add listener to item name for strikethrough
+    const nameBtn = document.getElementById(`name-${element._id}`);
+    nameBtn?.addEventListener("click", () => {
+      //toggle true/false - cant use classlist.toggle because of double entry
+      let activeUpdate: boolean;
+      if (nameBtn?.classList.contains("active-true")) {
+        nameBtn?.classList.replace("active-true", "active-false");
+        activeUpdate = false;
+      } else {
+        nameBtn?.classList.replace("active-false", "active-true");
+        activeUpdate = true;
+      }
+      //goto database and fetch active: true/false by id
+      toggleItemState(activeUpdate, element._id);
+    });
+    //add listener to edit btn
+    const editBtn = document.getElementById(
+      `edit-${element._id}`
+    ) as HTMLInputElement;
+    editBtn?.addEventListener("click", () => {
+      startItemEdit(editBtn, element.name, element._id);
+    });
+
+    //add listener to delete btn
+    const deleteBtn = document.getElementById(
+      `delete-${element._id}`
+    ) as HTMLInputElement;
+    deleteBtn?.addEventListener("click", () => {
+      //remove node
+      deleteBtn.parentElement!.remove();
+      //fetch delete from db
+      deleteItem(element._id);
+    });
+  }
+
   //edit item in db
-  async function editItem(itemUpdate: string, id: string) {
+  async function editItem(
+    itemContainer: HTMLElement,
+    itemUpdate: string,
+    id: string
+  ) {
     console.log("itemUpdate ", itemUpdate, "id ", id);
     try {
       let res = await fetch(`/api/item/${id}`, {
@@ -150,22 +186,25 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       let data: any = await res.json();
       console.log("edited Data from DB", data);
+
+      itemContainer.innerHTML = `
+      <span class="item-span active-${data.active} cursor-pointer" id="name-${data._id}">${data.name}</span>
+      <button class="delete-btn btn cursor-pointer" id="delete-${data._id}">DELETE</button>
+      <button class="edit-btn btn cursor-pointer" id="edit-${data._id}">EDIT</button>
+      `;
+
+      //add event listeners
+      addEventListenersToItem(data);
     } catch (error) {
       console.log("Error", error);
     }
-
-    //TODO: THE REDRAW SHOULD BE LIMITED TO ONE ITEM
-    //Here the parent div of the input box, then
-    //creat a child for it with addListItem(element: Data)
-    clearItems();
-    getItems();
   }
 
   function startItemEdit(button: HTMLElement, oldValue: string, id: string) {
     //get new value
     button.parentElement!.innerHTML = `
-    <input id="edit-item" type="text" value="${oldValue}" /><br />
-    <button class="" id="edit-item-${id}">EDIT</button>
+    <input id="edit-item" class="edit-item-input" type="text" value="${oldValue}" />
+    <button class="edit-btn btn cursor-pointer" id="edit-item-${id}">EDIT</button>
     `;
     const insertEditedItemBtn = document.getElementById(
       `edit-item-${id}`
@@ -177,7 +216,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("newItemValue ", newItemValue, "id ", id);
 
     insertEditedItemBtn.addEventListener("click", () => {
-      editItem(newItemValue.value, id);
+      editItem(insertEditedItemBtn.parentElement!, newItemValue.value, id);
     });
 
     // listen to Enter on edit item
@@ -202,57 +241,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
       //console.log("data: ", data);
       //console.log("typeof data: ", typeof data);
-      data.forEach((element: Data) => {
+      data.forEach((element: responseData) => {
         addListItem(element);
       });
     } catch (error) {
       console.log("Error", error);
     }
-  }
-
-  function addListItem(element: Data) {
-    const itemDiv = document.createElement("div");
-    itemDiv.classList.add("item-container");
-    itemDiv.innerHTML = `
-          <span class="active-${element.active} cursor-pointer" id="name-${element._id}">${element.name}</span>
-          <button class="" id="edit-${element._id}">EDIT</button>
-          <button class="delete-btn button" id="delete-${element._id}">DELETE</button>
-          `;
-    document.getElementById("list-item-div")?.appendChild(itemDiv);
-    //add listener to item name for strikethrough
-    const nameBtn = document.getElementById(`name-${element._id}`);
-    nameBtn?.addEventListener("click", () => {
-      //toggle true/false - cant use classlist.toggle because of double entry
-      let activeUpdate: boolean;
-      if (nameBtn?.classList.contains("active-true")) {
-        nameBtn?.classList.replace("active-true", "active-false");
-        activeUpdate = false;
-      } else {
-        nameBtn?.classList.replace("active-false", "active-true");
-        activeUpdate = true;
-      }
-      //goto database and fetch active: true/false by id
-      toggleItemState(activeUpdate, element._id);
-    });
-
-    //add listener to edit btn
-    const editBtn = document.getElementById(
-      `edit-${element._id}`
-    ) as HTMLInputElement;
-    editBtn?.addEventListener("click", () => {
-      startItemEdit(editBtn, element.name, element._id);
-    });
-
-    //add listener to delete btn
-    const deleteBtn = document.getElementById(
-      `delete-${element._id}`
-    ) as HTMLInputElement;
-    deleteBtn?.addEventListener("click", () => {
-      //remove node
-      deleteBtn.parentElement!.remove();
-      //fetch delete from db
-      deleteItem(element._id);
-    });
   }
 
   //load inital items list
@@ -275,12 +269,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "hide-completed-btn"
   ) as HTMLInputElement;
   hideBtn?.addEventListener("click", toggleCompletedItems);
-
-  //add listener to clear-completed-btn
-  // const clearBtn = document.getElementById(
-  //   "clear-completed-btn"
-  // ) as HTMLInputElement;
-  // clearBtn?.addEventListener("click", clearCompleted);
 
   //add listener to insert item btn
   const insertBtn = document.getElementById(
