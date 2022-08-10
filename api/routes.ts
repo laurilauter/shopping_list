@@ -40,8 +40,9 @@ router.get("/item/:id", async (req: express.Request, res: express.Response) => {
 
 //edit item
 router.put("/item/:id", async (req: express.Request, res: express.Response) => {
+  console.log("req body ", req.body);
   try {
-    const editItem = await Item.findOne({ _id: req.params.id });
+    const editItem = await Item.findOne({ _id: req.params.id }, req.body);
     if (req.body.name) {
       editItem!.name = req.body.name;
     }
@@ -49,6 +50,7 @@ router.put("/item/:id", async (req: express.Request, res: express.Response) => {
       editItem!.active = req.body.active;
     }
     const savedItem = await editItem!.save();
+    console.log("saved item in DB ", savedItem);
     res.status(200).send(savedItem);
   } catch {
     res.status(404).send({ error: "Item doesn't exist!" });

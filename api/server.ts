@@ -4,8 +4,15 @@ import "dotenv/config";
 const path = require("path");
 const routes = require("./routes");
 const port = process.env.PORT;
-const uri = process.env.MONGO_URI; //for live DB
-const localUri = process.env.MONGO_LOCAL_URI; //for local DB
+//const uri = process.env.MONGO_URI; //for live DB
+//const localUri = process.env.MONGO_LOCAL_URI; //for local DB
+let environment = process.env.NODE_ENV || "development";
+let uri;
+if (environment == "production") {
+  uri = process.env.MONGO_URI;
+} else if (environment == "development") {
+  uri = process.env.MONGO_URI_DEV;
+}
 
 //Connect to MongoDB database
 export const getConnection = mongoose.connect(`${uri}`).then(() => {

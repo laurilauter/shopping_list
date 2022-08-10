@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //add list item
   function addListItem(element: responseData) {
+    console.log("addListItem(element._id", element._id);
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("item-container");
     itemDiv.innerHTML = `
@@ -95,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         let data: any = await res.json();
-        console.log("response from BE ", data);
+        console.log("response from BE data.body ", data);
         //add list item
         addListItem(data);
       }
@@ -129,9 +130,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  //NOT ADDING EVENT LISTENERS TO NEW ITEMS
   //Add event listeners to item name, edit and delete buttons after initial draw, insertion and edit
   async function addEventListenersToItem(element: responseData) {
+    console.log("element.id ", element._id, element.name, element.active);
     //add listener to item name for strikethrough
     const nameBtn = document.getElementById(`name-${element._id}`);
     nameBtn?.addEventListener("click", () => {
@@ -153,6 +154,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ) as HTMLInputElement;
     editBtn?.addEventListener("click", () => {
       startItemEdit(editBtn, element.name, element._id);
+      console.log(
+        "editBtn, element.name, element._id ",
+        editBtn,
+        element.name,
+        element._id
+      );
     });
 
     //add listener to delete btn
@@ -173,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
     itemUpdate: string,
     id: string
   ) {
-    console.log("itemUpdate ", itemUpdate, "id ", id);
+    console.log("editItem itemUpdate ", itemUpdate, "id ", id);
     try {
       let res = await fetch(`/api/item/${id}`, {
         method: "PUT",
@@ -201,22 +208,31 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function startItemEdit(button: HTMLElement, oldValue: string, id: string) {
+    console.log("startItemEdit input", button, oldValue, id);
     //get new value
     button.parentElement!.innerHTML = `
-    <input id="edit-item" class="edit-item-input" type="text" value="${oldValue}" />
+    <input id="edit-item-input-${id}" class="edit-item-input" type="text" value="${oldValue}" />
     <button class="edit-btn btn cursor-pointer" id="edit-item-${id}">EDIT</button>
     `;
+    console.log("startItemEdit input ", id);
     const insertEditedItemBtn = document.getElementById(
       `edit-item-${id}`
     ) as HTMLElement;
+    console.log("insertEditedItemBtn ", insertEditedItemBtn);
 
     const newItemValue = document.getElementById(
-      "edit-item"
+      `edit-item-input-${id}`
     ) as HTMLInputElement;
     console.log("newItemValue ", newItemValue, "id ", id);
 
     insertEditedItemBtn.addEventListener("click", () => {
       editItem(insertEditedItemBtn.parentElement!, newItemValue.value, id);
+      console.log(
+        "insertEditedItemBtn.parentElement!, newItemValue.value, id ",
+        insertEditedItemBtn.parentElement!,
+        newItemValue.value,
+        id
+      );
     });
 
     // listen to Enter on edit item
