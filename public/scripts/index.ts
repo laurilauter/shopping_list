@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //add list item
   function addListItem(element: responseData) {
-    console.log("addListItem(element._id", element._id);
+    console.log("addListItem element._id", element._id);
     const itemDiv = document.createElement("div");
     itemDiv.classList.add("item-container");
     itemDiv.innerHTML = `
@@ -83,9 +83,6 @@ document.addEventListener("DOMContentLoaded", () => {
       active: true,
     };
 
-    //clear input
-    itemToBeInsserted.value = "";
-
     //create new item
     try {
       if (body.name) {
@@ -103,6 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
     } catch (error) {
       console.log("Error", error);
     }
+    //clear input
+    itemToBeInsserted.value = "";
   }
 
   //delete one
@@ -174,13 +173,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  //get single item
+  async function getSingleItem(id: string) {
+    try {
+      let res = await fetch(`/api/item/:${id}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+      let data: any = await res.json();
+      return data;
+    } catch (error) {
+      console.log("Error", error);
+    }
+  }
+
   //edit item in db
   async function editItem(
     itemContainer: HTMLElement,
     itemUpdate: string,
     id: string
   ) {
-    console.log("editItem itemUpdate ", itemUpdate, "id ", id);
+    console.log(
+      "container",
+      itemContainer,
+      "editItem itemUpdate ",
+      itemUpdate,
+      "id ",
+      id
+    );
     try {
       let res = await fetch(`/api/item/${id}`, {
         method: "PUT",
@@ -188,16 +208,25 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify({
           id: id,
           name: itemUpdate,
-          //active: active,
+          active: true,
         }),
       });
       let data: any = await res.json();
       console.log("edited Data from DB", data);
 
+      // let newItem = await fetch(`/api/item/${id}`, {
+      //   method: "GET",
+      //   headers: { "Content-Type": "application/json" },
+      // });
+      // let newItemData: any = await newItem.json();
+      // console.log("newItem ", newItem);
+
+      let newItemData = await getSingleItem(id);
+
       itemContainer.innerHTML = `
-      <span class="item-span active-${data.active} cursor-pointer" id="name-${data._id}">${data.name}</span>
-      <button class="delete-btn btn cursor-pointer" id="delete-${data._id}">DELETE</button>
-      <button class="edit-btn btn cursor-pointer" id="edit-${data._id}">EDIT</button>
+      <span class="item-span active-${newItemData.active} cursor-pointer" id="name-${newItemData._id}">${newItemData.name}</span>
+      <button class="delete-btn btn cursor-pointer" id="delete-${newItemData._id}">DELETE</button>
+      <button class="edit-btn btn cursor-pointer" id="edit-${newItemData._id}">EDIT</button>
       `;
 
       //add event listeners
@@ -212,11 +241,11 @@ document.addEventListener("DOMContentLoaded", () => {
     //get new value
     button.parentElement!.innerHTML = `
     <input id="edit-item-input-${id}" class="edit-item-input" type="text" value="${oldValue}" />
-    <button class="edit-btn btn cursor-pointer" id="edit-item-${id}">EDIT</button>
+    <button class="edit-btn btn cursor-pointer" id="insert-edited-item-btn-${id}">EDIT</button>
     `;
     console.log("startItemEdit input ", id);
     const insertEditedItemBtn = document.getElementById(
-      `edit-item-${id}`
+      `insert-edited-item-btn-${id}`
     ) as HTMLElement;
     console.log("insertEditedItemBtn ", insertEditedItemBtn);
 
@@ -226,10 +255,10 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("newItemValue ", newItemValue, "id ", id);
 
     insertEditedItemBtn.addEventListener("click", () => {
-      editItem(insertEditedItemBtn.parentElement!, newItemValue.value, id);
+      editItem(newItemValue.parentElement!, newItemValue.value, id);
       console.log(
-        "insertEditedItemBtn.parentElement!, newItemValue.value, id ",
-        insertEditedItemBtn.parentElement!,
+        "newItemValue.parentElement!, newItemValue.value, id ",
+        newItemValue.parentElement!,
         newItemValue.value,
         id
       );
@@ -238,25 +267,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // listen to Enter on edit item
     newItemValue.addEventListener("keypress", function (event) {
       if (event.key === "Enter") {
-        // Cancel the default action, if needed
         event.preventDefault();
         insertEditedItemBtn.click();
       }
     });
   }
 
-  //fetch items
+  //get items from DB
   async function getItems(): Promise<any> {
     try {
       let res = await fetch(`/api/item`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
       });
-
       let data: any = await res.json();
-
-      //console.log("data: ", data);
-      //console.log("typeof data: ", typeof data);
       data.forEach((element: responseData) => {
         addListItem(element);
       });
@@ -265,12 +289,28 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  //load inital items list
-  (async () => {
-    clearItems();
-    await getItems();
-    //console.log("relaoded items at start");
-  })();
+  function addPageEventListeners() {
+    //add listener to hide-completed-btn
+    const hideBtn = document.getElementById(
+      "hide-completed-btn"
+    ) as HTMLInputElement;
+    hideBtn?.addEventListener("click", toggleCompletedItems);
+
+    const insertBtn = document.getElementById(
+      "insert-item-btn"
+    ) as HTMLInputElement;
+    insertBtn?.addEventListener("click", insertItem);
+
+    const itemToBeInsserted = document.getElementById(
+      "input-item"
+    ) as HTMLInputElement;
+    itemToBeInsserted.addEventListener("keypress", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        insertBtn.click();
+      }
+    });
+  }
 
   //clear items list
   function clearItems() {
@@ -279,28 +319,9 @@ document.addEventListener("DOMContentLoaded", () => {
     ) as HTMLInputElement;
     listItemDiv.innerHTML = "";
   }
-
-  //add listener to hide-completed-btn
-  const hideBtn = document.getElementById(
-    "hide-completed-btn"
-  ) as HTMLInputElement;
-  hideBtn?.addEventListener("click", toggleCompletedItems);
-
-  //add listener to insert item btn
-  const insertBtn = document.getElementById(
-    "insert-item-btn"
-  ) as HTMLInputElement;
-  insertBtn?.addEventListener("click", insertItem);
-
-  // Listen to Enter at insert new item
-  const itemToBeInsserted = document.getElementById(
-    "input-item"
-  ) as HTMLInputElement;
-  itemToBeInsserted.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-      // Cancel the default action, if needed
-      event.preventDefault();
-      insertBtn.click();
-    }
-  });
+  addPageEventListeners();
+  (async () => {
+    clearItems();
+    await getItems();
+  })();
 });

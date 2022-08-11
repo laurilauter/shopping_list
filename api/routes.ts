@@ -42,7 +42,7 @@ router.get("/item/:id", async (req: express.Request, res: express.Response) => {
 router.put("/item/:id", async (req: express.Request, res: express.Response) => {
   console.log("req body ", req.body);
   try {
-    const editItem = await Item.findOne({ _id: req.params.id }, req.body);
+    const editItem = await Item.findOne({ _id: req.params.id });
     if (req.body.name) {
       editItem!.name = req.body.name;
     }
